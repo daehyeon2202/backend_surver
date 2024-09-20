@@ -4,10 +4,15 @@ const axios = require('axios');
 const app = express();
 const port = process.env.PORT || 3002;  // Render가 제공하는 동적 포트 사용
 
-const slackWebhookUrl = 'https://hooks.slack.com/services/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'; // 슬랙 웹훅 URL
+// 슬랙 웹훅 URL
+const slackWebhookUrl = 'https://hooks.slack.com/services/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';
 
-// CORS 설정 적용
-app.use(cors());
+// CORS 설정 - 특정 도메인만 허용하도록 설정
+app.use(cors({
+    origin: 'https://your-website-domain.com', // 아임웹 도메인 주소로 변경
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type']
+}));
 
 // JSON 데이터 파싱을 위한 미들웨어 설정
 app.use(express.json());
@@ -19,24 +24,24 @@ app.get('/', (req, res) => {
 app.post('/send-estimate', (req, res) => {
     const estimateData = {
         product: req.body.product,
-        volume: req.body.volume, // 볼륨 추가
+        volume: req.body.volume,
         quantity: req.body.quantity,
         date: req.body.date,
-        customerName: req.body.customerName, // 고객 이름 추가
-        customerEmail: req.body.customerEmail // 고객 이메일 추가
+        customerName: req.body.customerName,
+        customerEmail: req.body.customerEmail
     };
 
-   axios.post(slackWebhookUrl, {
-    text: `새로운 견적서 요청이 도착했습니다!\n제품: ${estimateData.product}\n용량: ${estimateData.volume}\n수량: ${estimateData.quantity}\n날짜: ${estimateData.date}\n\n고객 이름(업체명): ${estimateData.customerName}\n이메일: ${estimateData.customerEmail}`
-})
-.then(response => {
-    res.send('슬랙으로 견적서 요청이 성공적으로 전송되었습니다!');
-})
-.catch(error => {
-    console.error('슬랙 메시지 전송 오류:', error);  // 오류 로그 추가
-    res.status(500).send('슬랙으로 메시지 전송에 실패했습니다.');
+    axios.post(slackWebhookUrl, {
+        text: `새로운 견적서 요청이 도착했습니다!\n제품: ${estimateData.product}\n용량: ${estimateData.volume}\n수량: ${estimateData.quantity}\n날짜: ${estimateData.date}\n\n고객 이름(업체명): ${estimateData.customerName}\n이메일: ${estimateData.customerEmail}`
+    })
+    .then(response => {
+        res.send('슬랙으로 견적서 요청이 성공적으로 전송되었습니다!');
+    })
+    .catch(error => {
+        console.error('슬랙 메시지 전송 오류:', error);
+        res.status(500).send('슬랙으로 메시지 전송에 실패했습니다.');
+    });
 });
-
 
 app.listen(port, () => {
     console.log(`서버가 포트 ${port}에서 실행 중입니다.`);
