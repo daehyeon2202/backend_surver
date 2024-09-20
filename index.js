@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors'); // CORS 모듈 불러오기
 const axios = require('axios');
 const app = express();
-const port = 3002;
+const port = process.env.PORT || 3002;  // Render가 제공하는 동적 포트 사용
 
 const slackWebhookUrl = 'https://hooks.slack.com/services/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'; // 슬랙 웹훅 URL
 
