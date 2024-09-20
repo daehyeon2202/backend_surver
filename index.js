@@ -9,7 +9,7 @@ const slackWebhookUrl = 'https://hooks.slack.com/services/T06CS2VQR8B/B07N6JWTEL
 
 // CORS 설정 - 특정 도메인만 허용하도록 설정
 app.use(cors({
-    origin: 'https://your-website-domain.com', // 아임웹 도메인 주소로 변경
+    origin: 'https://2basekit.com', // 아임웹 도메인 주소로 변경
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type']
 }));
