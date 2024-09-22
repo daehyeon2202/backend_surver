@@ -5,7 +5,7 @@ const app = express();
 const port = process.env.PORT || 3002;
 
 // 슬랙 웹훅 URL
-const slackWebhookUrl = 'https://hooks.slack.com/services/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';
+const slackWebhookUrl = 'https://hooks.slack.com/services/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';
 
 // CORS 설정 - 특정 도메인만 허용하도록 설정
 app.use(cors({
