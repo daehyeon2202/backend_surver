@@ -34,10 +34,11 @@ app.post('/send-estimate', (req, res) => {
     // 슬랙 웹훅을 통해 메시지 전송
     axios.post(slackWebhookUrl, slackMessage)
         .then(response => {
+            console.log(`슬랙 응답 코드: ${response.status}`); // 응답 코드 출력
             res.send('슬랙으로 견적서 요청이 성공적으로 전송되었습니다!');
         })
         .catch(error => {
-            console.error('슬랙 메시지 전송 오류:', error);
+            console.error('슬랙 메시지 전송 오류:', error.response ? error.response.data : error.message);
             res.status(500).send('슬랙으로 메시지 전송에 실패했습니다.');
         });
 });
