@@ -1,11 +1,8 @@
 const express = require('express');
 const cors = require('cors');
-const axios = require('axios');
+const fs = require('fs'); // 파일 시스템 모듈을 사용해 데이터를 저장
 const app = express();
 const port = process.env.PORT || 3002;
-
-// 슬랙 웹훅 URL
-const slackWebhookUrl = 'https://hooks.slack.com/services/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';
 
 // CORS 설정 - 특정 도메인만 허용하도록 설정
 app.use(cors({
@@ -22,25 +19,19 @@ app.get('/', (req, res) => {
     res.send('서버가 성공적으로 실행되었습니다!');
 });
 
-// 견적서 요청 처리 라우트
-app.post('/send-estimate', (req, res) => {
-    const { product, volume, quantity, date, customerName, customerEmail } = req.body;
+// JotForm Webhook 데이터를 수신하는 라우트
+app.post('/webhook', (req, res) => {
+    const formData = req.body; // JotForm에서 받은 데이터를 수신
 
-    // 슬랙으로 전송할 메시지 생성
-    const slackMessage = {
-        text: `새로운 견적서 요청이 도착했습니다!\n제품: ${product}\n용량: ${volume}\n수량: ${quantity}\n날짜: ${date}\n\n고객 이름(업체명): ${customerName}\n이메일: ${customerEmail}`
-    };
-
-    // 슬랙 웹훅을 통해 메시지 전송
-    axios.post(slackWebhookUrl, slackMessage)
-        .then(response => {
-            console.log(`슬랙 응답 코드: ${response.status}`); // 응답 코드 출력
-            res.send('슬랙으로 견적서 요청이 성공적으로 전송되었습니다!');
-        })
-        .catch(error => {
-            console.error('슬랙 메시지 전송 오류:', error.response ? error.response.data : error.message);
-            res.status(500).send('슬랙으로 메시지 전송에 실패했습니다.');
-        });
+    // 데이터를 JSON 파일로 저장
+    fs.writeFile('form_data.json', JSON.stringify(formData, null, 2), (err) => {
+        if (err) {
+            console.error('데이터 저장 오류:', err);
+            return res.status(500).send('데이터 저장에 실패했습니다.');
+        }
+        console.log('데이터가 성공적으로 저장되었습니다.');
+        res.send('JotForm에서 데이터를 성공적으로 수신 및 저장했습니다!');
+    });
 });
 
 // 서버 시작
